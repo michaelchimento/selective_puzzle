@@ -171,7 +171,7 @@ def arrival_check(ser):
                 print("{} arrived".format(id_tag[-10:]))
                 write_csv("{},{},{},{}".format(id_tag,"arrived",time_stamp[0],time_stamp[1]),file_name)
                 tag_present = 1
-            else: print("bird left)")
+            else: print("bird left")
                     
     return tag_present, id_tag
 
@@ -248,10 +248,10 @@ try:
     while True:
 
         if tag_present == 0:
-            print("tp: {}".format(tag_present))
+            #print("tp: {}".format(tag_present))
             tag_present, id_tag = arrival_check(ser)
         elif tag_present == 1:
-            print("tp: {}".format(tag_present))
+            #print("tp: {}".format(tag_present))
             tag_present, id_tag = depart(ser)
 
 except Exception as e:
