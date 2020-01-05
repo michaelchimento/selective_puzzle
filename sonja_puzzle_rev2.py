@@ -36,7 +36,14 @@ class doorThread(threading.Thread):
         self.displacement_flag = 0
 
     def zero(self):
-        #print(self.state)
+        global csv_flag
+        if csv_flag == 1 and dt.datetime.now().minute != 30:
+            csv_flag = 0
+            
+        if csv_flag == 0 and dt.datetime.now().minute == 30:
+            create_new_csv()
+            csv_flag = 1
+        
         GPIO.output(22, 0)
         GPIO.output(27, 0)
         global tag_present
@@ -242,29 +249,24 @@ def create_new_csv():
         savefile.write(header)
 
 create_new_csv()
+global csv_flag
+csv_flag = 0
 
 #begin running solenoid and reed switch state machine for doors
 door_thread = doorThread(1, "Door-Thread")
 door_thread.start()
 
-global csv_flag
-csv_flag = 0
+
 
 try:
     while True:
-        if csv_flag == 1 and dt.datetime.now().minute != 30:
-            csv_flag = 0
-            
-        if csv_flag == 0 and dt.datetime.now().minute == 30:
-            create_new_csv()
-            csv_flag = 1
-            
-        if tag_present == 0:
-            #print("tp: {}".format(tag_present))
-            tag_present, id_tag = arrival_check(ser)
-        elif tag_present == 1:
+        if tag_present:
             #print("tp: {}".format(tag_present))
             tag_present, id_tag = depart(ser)
+            
+        else:
+            #print("tp: {}".format(tag_present))
+            tag_present, id_tag = arrival_check(ser)
 
 except Exception as e:
     timestamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')    
