@@ -247,10 +247,17 @@ create_new_csv()
 door_thread = doorThread(1, "Door-Thread")
 door_thread.start()
 
+global csv_flag
+csv_flag = 0
+
 try:
     while True:
-        if dt.datetime.now().minute==30:
+        if csv_flag == 1 and dt.datetime.now().minute != 30:
+            csv_flag = 0
+            
+        if csv_flag == 0 and dt.datetime.now().minute == 30:
             create_new_csv()
+            csv_flag = 1
             
         if tag_present == 0:
             #print("tp: {}".format(tag_present))
