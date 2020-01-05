@@ -52,12 +52,12 @@ class doorThread(threading.Thread):
         global id_tag
         if self.displacement_flag:
             self.displacement_flag = 0
-            print(id_tag)
-            print("reset flag")
+            #print(id_tag)
+            #print("reset flag")
         if not tag_present:
             self.state=0
         else:
-            print("checking lists")
+            #print("checking lists")
             if id_tag in both_list:
                 #open solenoids
                 GPIO.output(27, 1)
@@ -81,7 +81,7 @@ class doorThread(threading.Thread):
         global tag_present
         global id_tag
         if self.displacement_flag:
-            print("displacement_flag {}".format(self.displacement_flag))
+            #print("displacement_flag {}".format(self.displacement_flag))
             self.state=1
             pass
         if not tag_present:
@@ -91,14 +91,14 @@ class doorThread(threading.Thread):
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                 to_write_list = "{},{},{},{}".format(id_tag,"red",time_stamp[0],time_stamp[1])
                 write_csv(to_write_list,file_name)
-                print("solve red")
+                #print("solve red")
                 self.state = 3
         
             elif(GPIO.input(25)==True):
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                 to_write_list = "{},{},{},{}".format(id_tag,"blue",time_stamp[0],time_stamp[1])
                 write_csv(to_write_list,file_name)
-                print("solve blue")
+                #print("solve blue")
                 self.state = 3
             
      
@@ -112,7 +112,7 @@ class doorThread(threading.Thread):
                 self.state = 0
             else:
                 timestamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                print("Door is stuck open while no birds are at the puzzle {}".format(timestamp))
+                #print("Door is stuck open while no birds are at the puzzle {}".format(timestamp))
                 time.sleep(5)
                 #pins open and close back at state zero, hopefully resetting the door
                 GPIO.output(27, 1)
@@ -159,7 +159,7 @@ def mof_read(ser):
 def arrival_check(ser):
     global id_tag
     global tag_present
-    
+    global file_name
     while tag_present==0:
         if ser.inWaiting() > 0:
             id_tag = ser.read_until("\r".encode())[0:-1]
@@ -168,16 +168,19 @@ def arrival_check(ser):
             #print (len(id_tag))
             if len(id_tag)==10:
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
-                print("{} arrived".format(id_tag[-10:]))
+                #print("{} arrived".format(id_tag[-10:]))
                 write_csv("{},{},{},{}".format(id_tag,"arrived",time_stamp[0],time_stamp[1]),file_name)
                 tag_present = 1
-            else: print("bird left")
+            else:
+                pass
+                #print("bird left")
                     
     return tag_present, id_tag
 
 def depart(ser):
     global id_tag
     global tag_present
+    global file_name
     tolerance_limit = 0
     
     while tag_present==1:
@@ -186,18 +189,18 @@ def depart(ser):
         if ser.inWaiting() > 0:
             data = ser.read_until("\r".encode())[0:-1]
             data = data.decode("latin-1")
-            print(data)
+            #print(data)
             if (data == "?1" or len(data) != 10):
                 tolerance_limit +=1
-                if tolerance_limit >= 5:
-                    print("{} left".format(id_tag))
+                if tolerance_limit >= 10:
+                    #print("{} left".format(id_tag))
                     tag_present=0
                     time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                     write_csv("{},{},{},{}".format(id_tag,"departed",time_stamp[0],time_stamp[1]),file_name)
                     id_tag=""
                     
             elif(data[-10:] != id_tag and id_tag[-4:] not in data):
-                print("displacement")
+                #print("displacement")
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                 write_csv("{},{},{},{}".format(id_tag,"departed",time_stamp[0],time_stamp[1]),file_name)
                 write_csv("{},{},{},{}".format(data[-10:],"displacement",time_stamp[0],time_stamp[1]),file_name)
@@ -228,17 +231,17 @@ if not os.path.exists("data/"):
 
 #set file_name and timestamp for start of csv
 global file_name
-file_name = "data/{}_RFID.csv".format(puzzlebox_name)
-time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+def create_new_csv():
+    global file_name
+    time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H_%M_%S')
+    file_name = "data/{}_{}_RFID.csv".format(puzzlebox_name,time_stamp)
 
-if not os.path.isfile(file_name):
     with open(file_name, "a") as savefile:
         header = "ID, Event, YMD, Timestamp\n"
         savefile.write("#{} start time: {} \n".format(puzzlebox_name,time_stamp))
         savefile.write(header)
-else:
-    with open(file_name, "a") as savefile: # open data file in write mode
-        savefile.write("#{} start time: {} \n".format(puzzlebox_name,time_stamp))
+
+create_new_csv()
 
 #begin running solenoid and reed switch state machine for doors
 door_thread = doorThread(1, "Door-Thread")
@@ -246,7 +249,9 @@ door_thread.start()
 
 try:
     while True:
-
+        if dt.datetime.now().minute==30:
+            create_new_csv()
+            
         if tag_present == 0:
             #print("tp: {}".format(tag_present))
             tag_present, id_tag = arrival_check(ser)

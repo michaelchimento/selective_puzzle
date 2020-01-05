@@ -21,4 +21,4 @@ blue_list = [key  for (key, value) in bird_dict.items() if value == "blue"]
 both_list = [key  for (key, value) in bird_dict.items() if value == "both"]
 
 #use this to set puzzle location, will be used in data filename
-puzzlebox_name = "Location_test"
+puzzlebox_name = "Location_Test"
