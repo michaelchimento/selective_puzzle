@@ -5,7 +5,7 @@ GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Reed Blue
 GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Reed Red
 
 while True:
-    if(GPIO.input(21)==True):
+    if(GPIO.input(21)==False):
         print("solve red")
-    elif(GPIO.input(25)==True):
+    elif(GPIO.input(25)==False):
         print("solve blue")

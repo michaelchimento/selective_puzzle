@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 from tag_selection import red_list, blue_list, both_list, puzzlebox_name
 
 GPIO.setmode(GPIO.BCM)
-
+    
 #Enable solenoids, set to low
 GPIO.setup(22, GPIO.OUT)  # Sol 1 Blue
 GPIO.output(22,0)
@@ -19,8 +19,8 @@ GPIO.setup(27, GPIO.OUT)  # Sol 2 Red
 GPIO.output(27, 0)
 
 #enable reed switches
-GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Reed Blue
-GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #Reed Red
+GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # IR Blue
+GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) #IR Red
 
 global id_tag
 id_tag = ""
@@ -94,14 +94,14 @@ class doorThread(threading.Thread):
         if not tag_present:
             self.state = 0
         else:        
-            if(GPIO.input(21)==True):
+            if(GPIO.input(21)==False):
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                 to_write_list = "{},{},{},{}".format(id_tag,"red",time_stamp[0],time_stamp[1])
                 write_csv(to_write_list,file_name)
                 #print("solve red")
                 self.state = 3
         
-            elif(GPIO.input(25)==True):
+            elif(GPIO.input(20)==False):
                 time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S').split()
                 to_write_list = "{},{},{},{}".format(id_tag,"blue",time_stamp[0],time_stamp[1])
                 write_csv(to_write_list,file_name)
@@ -114,7 +114,7 @@ class doorThread(threading.Thread):
         global tag_present
         global id_tag
         if not tag_present:
-            if(GPIO.input(21)==False and GPIO.input(25)==False):
+            if(GPIO.input(21)==False and GPIO.input(20)==False):
                 time.sleep(3)
                 self.state = 0
             else:
@@ -127,7 +127,7 @@ class doorThread(threading.Thread):
                 time.sleep(.5)
                 self.state=0
 
-        elif(GPIO.input(21)==False and GPIO.input(25)==False):        
+        elif(GPIO.input(21)==False and GPIO.input(20)==False):        
             self.state = 2
     
     def state_switcher(self, i):
