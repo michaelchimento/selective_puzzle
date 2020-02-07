@@ -9,7 +9,7 @@ def decomment(csvfile):
         if raw: yield raw
 
 with open('/media/pi/INTENSO/tags.csv') as csvfile:
-    data= csv.reader(decomment(csvfile), delimiter=',')
+    data= csv.reader(decomment(csvfile), delimiter='\t')
     bird_data_table = [row for row in data]
     print(bird_data_table)
 
@@ -22,4 +22,5 @@ blue_list = [key  for (key, value) in bird_dict.items() if value == "blue"]
 both_list = [key  for (key, value) in bird_dict.items() if value == "both"]
 
 #use this to set puzzle location, will be used in data filename
-puzzlebox_name = "Mill"
+puzzlebox_name = "name goes here"
+
