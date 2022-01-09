@@ -17,10 +17,10 @@ with open('/media/pi/INTENSO/tags.csv') as csvfile:
 bird_dict = dict(bird_data_table)
 
 #create lists to be imported into sonja_puzzle_rev2
-red_list = [key  for (key, value) in bird_dict.items() if value == "red"]
-blue_list = [key  for (key, value) in bird_dict.items() if value == "blue"]
+right_list = [key  for (key, value) in bird_dict.items() if value == "right"]
+left_list = [key  for (key, value) in bird_dict.items() if value == "left"]
 both_list = [key  for (key, value) in bird_dict.items() if value == "both"]
 
 #use this to set puzzle location, will be used in data filename
-puzzlebox_name = "name goes here"
+puzzlebox_name = "Test_Puzzle"
 
