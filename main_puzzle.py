@@ -321,15 +321,15 @@ sd0_send(ser)
 mof_read(ser)
 
 #set up csv
-if not os.path.exists("/home/pi/sonja_puzzlebox/data/"):
-    os.makedirs("/home/pi/sonja_puzzlebox/data/")
+if not os.path.exists("/home/pi/selective_puzzle/data/"):
+    os.makedirs("/home/pi/selective_puzzle/data/")
 
 #set file_name and timestamp for start of csv
 global file_name
 def create_new_csv():
     global file_name
     time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H_%M_%S')
-    file_name = "/home/pi/sonja_puzzlebox/data/{}_{}_RFID.txt".format(puzzlebox_name,time_stamp)
+    file_name = "/home/pi/selective_puzzle/data/{}_{}_RFID.txt".format(puzzlebox_name,time_stamp)
 
     with open(file_name, "a") as savefile:
         header = "ID, Event, YMD, Timestamp, Puzzle_name\n"
