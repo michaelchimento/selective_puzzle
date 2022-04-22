@@ -9,40 +9,61 @@ import csv
 import RPi.GPIO as GPIO
 from tag_selection import right_list, left_list, both_list, puzzlebox_name
 
-
-speed = 1 ###time in seconds fod closing the door
-            ### Min speed 0.2sec
-
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-    
-# Set pin 11 as an output, and define as servo1 as PWM pin
-GPIO.setup(17,GPIO.OUT) #BLUE
-servo1 = GPIO.PWM(17,50) # pin 11 for servo1, pulse 50Hz
 
-# Set pin 11 as an output, and define as servo1 as PWM pin
-GPIO.setup(18,GPIO.OUT) ## RED
-servo2 = GPIO.PWM(18,50) # pin 11 for servo1, pulse 50Hz
+#set up IR sensors
+GPIO.setup(20,GPIO.IN) #pin 20 -> IR sensor right
+GPIO.setup(21, GPIO.IN) #pin 21 -> IR sensor left
 
-# Start PWM running, with value of 0 (pulse off)
+# set up servo motor GPIO pins
+GPIO.setup(17,GPIO.OUT) # right servo
+GPIO.setup(18,GPIO.OUT) # left servo
+servo1 = GPIO.PWM(17,50) # pin 17, pulse 50Hz
+servo2 = GPIO.PWM(18,50) # pin 18, pulse 50Hz
+
+# Start PWM with value of 0 (pulse off)
 servo1.start(0)
 servo2.start(0)
-servo1.ChangeDutyCycle(7)
-servo2.ChangeDutyCycle(5)
-time.sleep(0.3)
-servo1.ChangeDutyCycle(0)
-servo2.ChangeDutyCycle(0)
 
-
-#enable IR sensors
-GPIO.setup(20,GPIO.IN) #GPIO 38 -> IR sensor RED
-GPIO.setup(21, GPIO.IN) #GPIO 40 -> IR sensor BLUE
-
-
-global id_tag
-id_tag = ""
-global tag_present
-tag_present=0
+def open_LR():
+    print("opening left and right access")
+    servo1.ChangeDutyCycle(7)
+    servo2.ChangeDutyCycle(5)
+    time.sleep(0.3)
+    servo1.ChangeDutyCycle(0)
+    servo2.ChangeDutyCycle(0)
+            
+def open_L():
+    print("opening left access")
+    servo1.ChangeDutyCycle(7)
+    servo2.ChangeDutyCycle(10)
+    time.sleep(0.3)
+    servo1.ChangeDutyCycle(0)
+    servo2.ChangeDutyCycle(0)
+    
+def open_R():
+    print("opening right access")
+    servo1.ChangeDutyCycle(2)
+    servo2.ChangeDutyCycle(5)
+    time.sleep(0.3)
+    servo1.ChangeDutyCycle(0)
+    servo2.ChangeDutyCycle(0)
+    
+def close_door(speed):
+    steps = int(speed/0.02) 
+    servo1.ChangeDutyCycle(7)
+    servo2.ChangeDutyCycle(5)
+    time.sleep(0.3)    
+    for i in range(1,steps):
+        servo1.ChangeDutyCycle(7-i/(speed*10))
+        servo2.ChangeDutyCycle(5+i/(speed*10))
+        
+        time.sleep(0.02)
+        servo1.ChangeDutyCycle(0)
+        servo2.ChangeDutyCycle(0)
+    servo1.ChangeDutyCycle(0)
+    servo2.ChangeDutyCycle(0)
 
 class doorThread(threading.Thread):
     def __init__(self, threadID, name):
@@ -54,7 +75,9 @@ class doorThread(threading.Thread):
         self.door_opened = 0
 
     def zero(self):
-        #print(self.state)
+        #print("State {}".format(self.state))
+        
+        #create a new csv every 30 mins
         global csv_flag
         if csv_flag == 1 and dt.datetime.now().minute != 30:
             csv_flag = 0
@@ -63,11 +86,11 @@ class doorThread(threading.Thread):
             create_new_csv()
             csv_flag = 1
             
-
         global tag_present
         if tag_present:
             self.state=1
-            
+        
+        #if the doors are open in this state, it's likely that one of the servos isn't working, or there is something in the IR sensor
         elif(GPIO.input(21)==True):
             self.door_opened = 1
             time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f').split()
@@ -88,7 +111,7 @@ class doorThread(threading.Thread):
             self.state =0        
         
     def one(self):
-        print(self.state)
+        #print("State {}".format(self.state))
         global tag_present
         global id_tag
 
@@ -99,54 +122,31 @@ class doorThread(threading.Thread):
             self.displacement_flag = 0
             self.state=0
         else:
-            print("checking lists")
-            print(id_tag)
-            if id_tag in both_list:
-                ### Open Both servos
-                servo1.ChangeDutyCycle(7)
-                servo2.ChangeDutyCycle(5)
-                time.sleep(0.3)
-                servo1.ChangeDutyCycle(0)
-                servo2.ChangeDutyCycle(0)
-                self.displacement_flag = 0
+            print("Checking if {} is in lists".format(id_tag))
 
-                self.state = 2            
+            if id_tag in both_list:
+                open_LR()
+                self.displacement_flag = 0
+                self.state = 2
             elif id_tag in left_list:
-                #open left servo
-                servo1.ChangeDutyCycle(7)
-                servo2.ChangeDutyCycle(10)
-                time.sleep(0.3)
-                servo1.ChangeDutyCycle(0)
-                servo2.ChangeDutyCycle(0)
+                open_L()
                 self.displacement_flag = 0
                 self.state=2
             
             elif id_tag in right_list:
-                #open right
-                servo1.ChangeDutyCycle(2)
-                servo2.ChangeDutyCycle(5)
-                time.sleep(0.3)
-                servo1.ChangeDutyCycle(0)
-                servo2.ChangeDutyCycle(0)
+                open_R()
                 self.displacement_flag = 0
                 self.state=2
+            
             else:
                 print("Bird not in lists")
                 if self.displacement_flag:
                     close_door(speed)
                     self.displacement_flag = 0
                 self.state=2
-#                 for i in range(1,48):
-#                     servo1.ChangeDutyCycle(8-i/8)
-#                     servo2.ChangeDutyCycle(2+i/8)
-#                     time.sleep(0.02)
-#                 servo1.ChangeDutyCycle(0)
-#                 servo2.ChangeDutyCycle(0)
-#                 self.state=1
-                
-
     
     def two(self):
+        #print("State {}".format(self.state))
         global tag_present
         global id_tag
         if self.displacement_flag:
@@ -175,15 +175,16 @@ class doorThread(threading.Thread):
             
      
     def three(self):
+        #print("State {}".format(self.state))
         global tag_present
-        global id_tag
-        
-        #wait 1 second, close door.
-        time.sleep(3)
+        global id_tag  
+        #wait 3 seconds, close door.
+        time.sleep(opportunity_window)
         close_door(speed)
         self.state=0
         
     def four(self):
+        #print("State {}".format(self.state))
         if self.door_opened==1 and GPIO.input(21)==True or GPIO.input(20)==True:
             self.door_opened = 0
             self.state=0
@@ -212,48 +213,6 @@ class doorThread(threading.Thread):
         while 1:
             self.thread_action()
         print("Exiting " + self.name)
-
-def close_door(speed):
-    steps = int(speed/0.02) 
-    servo1.ChangeDutyCycle(7)
-    servo2.ChangeDutyCycle(5)
-    time.sleep(0.3)    
-    for i in range(1,steps):
-        servo1.ChangeDutyCycle(7-i/(speed*10))
-        servo2.ChangeDutyCycle(5+i/(speed*10))
-        
-        time.sleep(0.02)
-        servo1.ChangeDutyCycle(0)
-        servo2.ChangeDutyCycle(0)
-    servo1.ChangeDutyCycle(0)
-    servo2.ChangeDutyCycle(0)
-
-close_door(speed)
-
-
-
-
-def close_door3():
-    servo1.ChangeDutyCycle(7)
-    servo2.ChangeDutyCycle(5)
-    time.sleep(0.3)    
-    for i in range(1,5):
-        servo1.ChangeDutyCycle(7-i)
-        servo2.ChangeDutyCycle(5+i)
-        
-        time.sleep(0.02)
-        servo1.ChangeDutyCycle(0)
-        servo2.ChangeDutyCycle(0)
-    servo1.ChangeDutyCycle(0)
-    servo2.ChangeDutyCycle(0)
-
-def close_door2():
-    for i in range(1,100):
-        servo1.ChangeDutyCycle(7-i/20)
-        servo2.ChangeDutyCycle(5+i/20)
-        time.sleep(0.02)
-    servo1.ChangeDutyCycle(0)
-    servo2.ChangeDutyCycle(0)
 
 def write_csv(to_write_list,file_name):
     with open(file_name, "a") as savefile:
@@ -316,7 +275,7 @@ def depart(ser):
             print(data)
             if (data == "?1" or len(data) != 10):
                 tolerance_limit +=1
-                if tolerance_limit >= 10:
+                if tolerance_limit >= lost_tag_limit:
                     print("{} left".format(id_tag))
                     tag_present=0
                     time_stamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f').split()
@@ -337,6 +296,16 @@ def depart(ser):
             
     return tag_present, id_tag
 
+# Stuff begins to happen here. Define parameters that control how door works
+opportunity_window = 3 #time in seconds to wait before closing door. Longer values mean more scrounging
+speed = 1 #time in seconds for closing the door, min speed 0.2sec
+lost_tag_limit = 10 #number of consecutive empty tag reads before the puzzle decides that a bird has left
+
+# reset doors
+open_LR()
+close_door(speed)
+
+#set up the serial port
 try:
     ser = serial.Serial('/dev/ttyAMA0', baudrate=9600,
                         parity=serial.PARITY_NONE,
@@ -346,10 +315,10 @@ try:
 except:
     print("error setting up serial port")
 
+#make sure the reader is in the right mode
+#read the antenna's operating frequency. If too high or too low, PIT codes will not be detected.
 sd0_send(ser)
 mof_read(ser)
-
-
 
 #set up csv
 if not os.path.exists("/home/pi/sonja_puzzlebox/data/"):
@@ -366,16 +335,19 @@ def create_new_csv():
         header = "ID, Event, YMD, Timestamp, Puzzle_name\n"
         #savefile.write("#{} start time: {} \n".format(puzzlebox_name,time_stamp))
         savefile.write(header)
-
+        
 create_new_csv()
 global csv_flag
 csv_flag = 0
 
-#begin running solenoid and reed switch state machine for doors
+global id_tag # this will hold the PIT tag ID once a bird has landed
+id_tag = ""
+global tag_present #this is a binary value that is 1 if a bird has landed, 0 otherwise
+tag_present=0
+
+#begin running state machine for doors
 door_thread = doorThread(1, "Door-Thread")
 door_thread.start()
-
-
 
 try:
     while True:
@@ -389,7 +361,7 @@ try:
 
 except Exception as e:
     timestamp = dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')    
-    #print("an error has occurred during main execution at {}".format(timestamp)) 
+    print("An error has occurred during main execution at {}".format(timestamp)) 
     print(e)
 
 finally:
