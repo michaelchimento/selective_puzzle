@@ -1,8 +1,29 @@
-0700EDFA90,red
-0110178EEC,both
-0700ED9FF1,red
-0700EE3493,red
-0700EE2FFE,red
-0110177823,blue
-0700ED9B6A,blue
-0700EE000A,blue
+0700EDFA90  both    # test tag                  
+0700ED9C1D  left    #demonstrator McD       
+0700EDCDCB  left    #demonstrator McD       
+0700EE1990  left    #demonstrator McD       
+0700EDAC82  left    #demonstrator McD       
+0700EE41D3  left    #demonstrator McD       
+0700EDB3F2  left    #demonstrator McD       
+0700EE261C  right   #demonstrator Mettnau       
+0700EE2D2A  right   #demonstrator Mettnau       
+0700EE3E71  right   #demonstrator Mettnau       
+0700EDA852  right   #demonstrator Mettnau       
+0700EE3D79  right   #demonstrator Mettnau       
+0700EDB3D5  right   #demonstrator Mettnau               
+0110179BE5  both            
+010799F8DC  both            
+0110178094  both            
+0110177678  both            
+011017914E  both            
+0110179786  both            
+0110177BE2  both            
+01101783BC  both            
+01101786EA  both            
+0110179D0E  both            
+011017959A  both            
+0110177598  both            
+0110177BD3  both            
+0110177B80  both            
+0110178191  both            
+01101771AF  both
