@@ -1,5 +1,5 @@
 # Manipulating actions: a selective two-option device for cognitive experiments in wild animals
-**Authors**: *Sonja Wild, Gustavo Alarcon Nieto, Michael Chimento, Lucy M. Aplin*
+**Authors**: *Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy M. Aplin*
 
 ## Abstract
 1. Advances in biologging technologies have significantly improved our abilities to track individual animals' behaviour in their natural environment. Beyond observations, automation of data collection has revolutionised cognitive experiments in the wild. For example, radio-frequency identification (RFID) antennae embedded in 'puzzle-box' devices have allowed for large-scale cognitive experiments where individuals tagged with passive integrated transponder (PIT) tags interact with puzzle-boxes to gain a food reward, with devices logging both the identity and solving action of visitors.  
@@ -9,7 +9,7 @@
 5. We therefore introduce and successfully tested a new selective two-option puzzle-box, providing detailed instructions and freely available software that allows reproducibility. It extends the functionality of existing systems by allowing fine-scale manipulations of individuals' actions and opens a large range of possibilities to study cognitive processes in wild animal populations.
 
 ## Description
-This repository contains the python code that controls the selective puzzlebox as described in the paper. This code is intended to run on Raspberry Pi 4 micro-computers.
+This repository contains the python code that controls the selective puzzlebox as described in the paper. This code is intended to run on a Raspberry Pi 4 microcomputer.
 
 ### Files
 | File      | Description |
