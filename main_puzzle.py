@@ -352,11 +352,9 @@ door_thread.start()
 try:
     while True:
         if tag_present:
-            print("tp: {}".format(tag_present))            
             tag_present, id_tag = depart(ser)            
             
         else:
-            print("tp: {}".format(tag_present))
             tag_present, id_tag = arrival_check(ser)
 
 except Exception as e:
@@ -369,3 +367,4 @@ finally:
     servo2.ChangeDutyCycle(0)
     ser.close()
     GPIO.cleanup()
+
