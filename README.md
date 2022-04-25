@@ -50,3 +50,8 @@ Reboot the raspberry pi and the main_puzzle.py should automatically begin. You c
 ```
 pgrep -af python
 ```
+To see the output of the program as it's running, use
+```
+tail -f selective_puzzle/logs
+```
+
