@@ -8,7 +8,7 @@ def decomment(csvfile):
         raw = row.split('#')[0].strip()
         if raw: yield raw
 
-with open('/media/pi/INTENSO/tags.csv') as csvfile:
+with open('/media/pi/INTENSO/tags.txt') as csvfile:
     data= csv.reader(decomment(csvfile), delimiter='\t')
     bird_data_table = [row for row in data]
     print(bird_data_table)
