@@ -18,7 +18,7 @@ This repository contains the python code that controls the selective puzzlebox a
 | main_puzzle.py | Python script that contains the main code used to control the puzzle box. It is run automatically after boot. |
 | puzzle_launcher.sh | Shell script that takes care of launching main_puzzle.py |
 | tag_selection.py | Reads tags.csv and returns lists of IDs which can access one solution or the other, or both. |
-| tags.csv | List of IDs and their respective access, with a tab separator. |
+| tags.txt | List of IDs and their respective access, with a tab separator. |
 
 ## Installation
 From the terminal, run the following:
