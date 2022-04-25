@@ -3,5 +3,5 @@
 
 cd /home/pi/selective_puzzle/
 sleep 15
-python3 main_puzzle.py&
+python3 -u main_puzzle.py >> log.txt&
 exit 0
