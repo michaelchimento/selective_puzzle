@@ -1,5 +1,6 @@
 # Manipulating actions: a selective two-option device for cognitive experiments in wild animals
 **Authors**: *Sonja Wild, Gustavo Alarcón-Nieto, Michael Chimento, Lucy M. Aplin*
+[![DOI](https://zenodo.org/badge/386905903.svg)](https://zenodo.org/badge/latestdoi/386905903)
 
 ## Abstract
 1. Advances in biologging technologies have significantly improved our abilities to track individual animals' behaviour in their natural environment. Beyond observations, automation of data collection has revolutionised cognitive experiments in the wild. For example, radio-frequency identification (RFID) antennae embedded in 'puzzle-box' devices have allowed for large-scale cognitive experiments where individuals tagged with passive integrated transponder (PIT) tags interact with puzzle-boxes to gain a food reward, with devices logging both the identity and solving action of visitors.  
