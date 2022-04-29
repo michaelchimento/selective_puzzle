@@ -34,7 +34,7 @@ Save the crontab and use chmod to make the shell files executable.
 chmod +x /home/pi/selective_puzzle/puzzle_launcher.sh
 chmod +x /home/pi/selective_puzzle/copy_rfid_data.sh
 ```
-Rename your usb stick to INTENSO, or directly edit the code to accommodate a custom name. The stick must be plugged in before booting up the raspberry pi when running the code. Also copy the tags.csv file onto the USB-stick, as it will be read from this location.
+Rename your usb stick to INTENSO, or directly edit the code to accommodate a custom name. The stick must be plugged in before booting up the raspberry pi when running the code. Also copy the tags.txt file onto the USB-stick, as it will be read from this location.
 
 Finally, edit the boot config file by running
 ```
