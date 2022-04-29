@@ -2,12 +2,13 @@
 
 import csv
 
-#allows csvreader to ignore commented files
+#allows csvreader to ignore commented lines, marked with a hash
 def decomment(csvfile):
     for row in csvfile:
         raw = row.split('#')[0].strip()
         if raw: yield raw
 
+#IMPORTANT: make sure you change this file path to wherever you're keeping the tag list
 with open('/media/pi/INTENSO/tags.txt') as csvfile:
     data= csv.reader(decomment(csvfile), delimiter='\t')
     bird_data_table = [row for row in data]
